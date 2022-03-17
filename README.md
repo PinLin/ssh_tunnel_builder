@@ -1,3 +1,13 @@
-# Service Tunnel
+# SSH Tunnel Builder
 
-Manage SSH tunnels for exposing services.
+Build a SSH tunnel that will start automatically when boot up.
+
+## Usage
+
+```bash
+# build tunnels if it is not existed
+sudo ./tunnel.py build
+
+# clear all existed tunnels
+sudo ./tunnel.py clear
+```
