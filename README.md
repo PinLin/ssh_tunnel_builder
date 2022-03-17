@@ -2,6 +2,10 @@
 
 Build a SSH tunnel that will start automatically when boot up.
 
+## Supported Init Systems
+
+- systemd
+
 ## Usage
 
 ```bash
