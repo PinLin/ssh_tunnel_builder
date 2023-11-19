@@ -1,17 +1,20 @@
 # SSH Tunnel Builder
 
-Build a SSH tunnel that will start automatically when boot up.
+用來建立 SSH Tunnel 系統服務的小工具，建立的服務會在開機時建立 SSH Tunnel 並在斷線時自動重連。
 
 ## Supported Init Systems
 
-- systemd
+- Systemd
 
 ## Usage
 
-```bash
-# build tunnels if it is not existed
-sudo ./tunnel.py build
+建立 SSH Tunnel 服務：
 
-# clear all existed tunnels
-sudo ./tunnel.py clear
+```bash
+python3 tunnel.py make <tunnel_name> <ssh_args>
 ```
+
+> 例如：
+> ```bash
+> python3 tunnel.py make mariadb remote_user@remote_host -NR 3306:localhost:3306
+> ```
