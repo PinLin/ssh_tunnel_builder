@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import getpass
 import os
 import sys
 
@@ -21,7 +22,7 @@ class Systemd:
         tmp_file = os.path.join("/tmp", f"{service_name}.service")
         with open(tmp_file, "w") as f:
             f.write(
-                template.format(username=os.getlogin(), ssh_args=" ".join(ssh_args))
+                template.format(username=getpass.getuser(), ssh_args=" ".join(ssh_args))
             )
 
         print(f"Copy {service_name} to `{cls.SERVICE_DIR}`...")
