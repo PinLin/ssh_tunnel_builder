@@ -5,6 +5,7 @@
 ## Supported Init Systems
 
 - Systemd
+- Launchd
 
 ## Usage
 
@@ -16,5 +17,5 @@ python3 tunnel.py make <tunnel_name> <ssh_args>
 
 > 例如：
 > ```bash
-> python3 tunnel.py make mariadb remote_user@remote_host -NR 3306:localhost:3306
+> python3 tunnel.py make mariadb remote_user@remote_host -R 3306:localhost:3306
 > ```
