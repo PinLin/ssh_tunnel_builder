@@ -8,7 +8,7 @@ User={username}
 Restart=always
 RestartSec=1
 StartLimitInterval=0
-ExecStart=/usr/bin/ssh -NT -o ExitOnForwardFailure=yes -o ServerAliveInterval=30 -o ServerAliveCountMax=3 {ssh_args}
+ExecStart=/usr/bin/env ssh -NT -o ExitOnForwardFailure=yes -o ServerAliveInterval=30 -o ServerAliveCountMax=3 {ssh_args}
 
 [Install]
 WantedBy=multi-user.target
