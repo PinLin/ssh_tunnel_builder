@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 import argparse
 import getpass
 import os
@@ -18,8 +18,8 @@ class Systemd:
         with open(cls.TEMPLATE_FILE, "r") as f:
             template = f.read()
 
-        service_name = f"ssh-tunnel-{name}"
-        filename = f"{service_name}.service"
+        service_name = "ssh-tunnel-{}".format(name)
+        filename = "{}.service".format(service_name)
 
         tmp_file = os.path.join("/tmp", filename)
         with open(tmp_file, "w") as f:
@@ -27,13 +27,13 @@ class Systemd:
                 template.format(username=getpass.getuser(), ssh_args=" ".join(ssh_args))
             )
 
-        print(f"Copy {service_name} to `{cls.SERVICE_DIR}`...")
-        assert os.system(f"{SUDO}cp {tmp_file} {cls.SERVICE_DIR}") == 0
+        print("Copy {} to `{}`...".format(service_name, cls.SERVICE_DIR))
+        assert os.system("{}cp {} {}".format(SUDO, tmp_file, cls.SERVICE_DIR)) == 0
         print("Reload systemd daemon...")
-        assert os.system(f"{SUDO}systemctl daemon-reload") == 0
-        print(f"Start {service_name}...")
-        assert os.system(f"{SUDO}systemctl enable {service_name}") == 0
-        assert os.system(f"{SUDO}systemctl start {service_name}") == 0
+        assert os.system("{}systemctl daemon-reload".format(SUDO)) == 0
+        print("Start {}...".format(service_name))
+        assert os.system("{}systemctl enable {}".format(SUDO, service_name)) == 0
+        assert os.system("{}systemctl start {}".format(SUDO, service_name)) == 0
 
     @classmethod
     def list_tunnels(cls):
@@ -41,21 +41,21 @@ class Systemd:
 
     @classmethod
     def remove_tunnel(cls, name):
-        service_name = f"ssh-tunnel-{name}"
-        filename = f"{service_name}.service"
+        service_name = "ssh-tunnel-{}".format(name)
+        filename = "{}.service".format(service_name)
 
         file = os.path.join(cls.SERVICE_DIR, filename)
         if not os.path.exists(file):
-            print(f"Service `{service_name}` is not existed.")
+            print("Service `{}` is not existed.".format(service_name))
             sys.exit(1)
 
-        print(f"Stop {service_name}...")
-        assert os.system(f"{SUDO}systemctl stop {service_name}") == 0
-        assert os.system(f"{SUDO}systemctl disable {service_name}") == 0
-        print(f"Remove {service_name} from `{cls.SERVICE_DIR}`...")
-        assert os.system(f"{SUDO}rm {file}") == 0
+        print("Stop {}...".format(service_name))
+        assert os.system("{}systemctl stop {}".format(SUDO, service_name)) == 0
+        assert os.system("{}systemctl disable {}".format(SUDO, service_name)) == 0
+        print("Remove {} from `{}`...".format(service_name, cls.SERVICE_DIR))
+        assert os.system("{}rm {}".format(SUDO, file)) == 0
         print("Reload systemd daemon...")
-        assert os.system(f"{SUDO}systemctl daemon-reload") == 0
+        assert os.system("{}systemctl daemon-reload".format(SUDO)) == 0
 
 
 class Launchd:
@@ -67,8 +67,8 @@ class Launchd:
         with open(cls.TEMPLATE_FILE, "r") as f:
             template = f.read()
 
-        service_name = f"ssh-tunnel-{name}"
-        filename = f"com.{service_name}.plist"
+        service_name = "ssh-tunnel-{}".format(name)
+        filename = "com.{}.plist".format(service_name)
 
         tmp_file = os.path.join("/tmp", filename)
         with open(tmp_file, "w") as f:
@@ -81,29 +81,29 @@ class Launchd:
             )
         file = os.path.join(cls.SERVICE_DIR, filename)
 
-        print(f"Copy {service_name} to `{cls.SERVICE_DIR}`...")
-        assert os.system(f"{SUDO}cp {tmp_file} {cls.SERVICE_DIR}") == 0
-        print(f"Start {service_name}...")
-        assert os.system(f"{SUDO}launchctl load -w {file}") == 0
+        print("Copy {} to `{}`...".format(service_name, cls.SERVICE_DIR))
+        assert os.system("{}cp {} {}".format(SUDO, tmp_file, cls.SERVICE_DIR)) == 0
+        print("Start {}...".format(service_name))
+        assert os.system("{}launchctl load -w {}".format(SUDO, file)) == 0
 
     @classmethod
     def list_tunnels(cls):
-        os.system(f"{SUDO}launchctl list | grep com.ssh-tunnel-")
+        os.system("{}launchctl list | grep com.ssh-tunnel-".format(SUDO))
 
     @classmethod
     def remove_tunnel(cls, name):
-        service_name = f"ssh-tunnel-{name}"
-        filename = f"com.{service_name}.plist"
+        service_name = "ssh-tunnel-{}".format(name)
+        filename = "com.{}.plist".format(service_name)
 
         file = os.path.join(cls.SERVICE_DIR, filename)
         if not os.path.exists(file):
-            print(f"Service `{service_name}` is not existed.")
+            print("Service `{}` is not existed.".format(service_name))
             sys.exit(1)
 
-        print(f"Stop {service_name}...")
-        assert os.system(f"{SUDO}launchctl unload -w {file}") == 0
-        print(f"Remove {service_name} from `{cls.SERVICE_DIR}`...")
-        assert os.system(f"{SUDO}rm {file}") == 0
+        print("Stop {}...".format(service_name))
+        assert os.system("{}launchctl unload -w {}".format(SUDO, file)) == 0
+        print("Remove {} from `{}`...".format(service_name, cls.SERVICE_DIR))
+        assert os.system("{}rm {}".format(SUDO, file)) == 0
 
 
 def main():
