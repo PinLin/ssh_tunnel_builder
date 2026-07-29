@@ -10,14 +10,18 @@ SSH Tunnel Builder is a single-file Python CLI tool (`tunnel.py`) that creates p
 
 ```bash
 # Create a tunnel
-python3 tunnel.py make <name> <ssh_args>
+python3 tunnel.py new <name> <ssh_args>
 
 # List tunnels
-python3 tunnel.py list
+python3 tunnel.py ls
 
 # Remove a tunnel
-python3 tunnel.py remove <name>
+python3 tunnel.py rm <name>
 ```
+
+The old command names (`make`, `list`, `remove`) are still accepted as hidden
+aliases — they are registered as separate subparsers (not `add_parser(aliases=)`,
+which Python 2 lacks) and normalized through `COMMAND_ALIASES` in `main()`.
 
 ## Architecture
 

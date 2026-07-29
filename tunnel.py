@@ -106,40 +106,50 @@ class Launchd:
         assert os.system("{}rm {}".format(SUDO, file)) == 0
 
 
+COMMAND_ALIASES = {"make": "new", "list": "ls", "remove": "rm"}
+
+
+def add_new_parser(subparsers, name, **kwargs):
+    parser = subparsers.add_parser(name, **kwargs)
+    parser.add_argument("name", help="tunnel name")
+    parser.add_argument("ssh_args", nargs=argparse.REMAINDER, help="ssh arguments")
+    return parser
+
+
+def add_rm_parser(subparsers, name, **kwargs):
+    parser = subparsers.add_parser(name, **kwargs)
+    parser.add_argument("name", help="tunnel name")
+    return parser
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.set_defaults(func=parser.print_help)
 
-    subparsers = parser.add_subparsers(dest="command")
-    parser_make = subparsers.add_parser("make", help="make tunnel")
-    parser_make.add_argument("name", help="tunnel name")
-    parser_make.add_argument("ssh_args", nargs=argparse.REMAINDER, help="ssh arguments")
-    subparsers.add_parser("list", help="list tunnels")
-    parser_remove = subparsers.add_parser("remove", help="remove tunnel")
-    parser_remove.add_argument("name", help="tunnel name")
+    subparsers = parser.add_subparsers(dest="command", metavar="{new,ls,rm}")
+    add_new_parser(subparsers, "new", help="make tunnel")
+    subparsers.add_parser("ls", help="list tunnels")
+    add_rm_parser(subparsers, "rm", help="remove tunnel")
+
+    # Deprecated command names, kept for backward compatibility.
+    # Omitting `help` keeps them out of the help listing.
+    add_new_parser(subparsers, "make")
+    subparsers.add_parser("list")
+    add_rm_parser(subparsers, "remove")
 
     args = parser.parse_args()
 
-    os_type = platform.system()
-    if os_type == "Darwin":
-        if args.command == "make":
-            Launchd.make_tunnel(args.name, args.ssh_args)
-        elif args.command == "list":
-            Launchd.list_tunnels()
-        elif args.command == "remove":
-            Launchd.remove_tunnel(args.name)
-        else:
-            parser.print_help()
+    command = COMMAND_ALIASES.get(args.command, args.command)
 
+    backend = Launchd if platform.system() == "Darwin" else Systemd
+    if command == "new":
+        backend.make_tunnel(args.name, args.ssh_args)
+    elif command == "ls":
+        backend.list_tunnels()
+    elif command == "rm":
+        backend.remove_tunnel(args.name)
     else:
-        if args.command == "make":
-            Systemd.make_tunnel(args.name, args.ssh_args)
-        elif args.command == "list":
-            Systemd.list_tunnels()
-        elif args.command == "remove":
-            Systemd.remove_tunnel(args.name)
-        else:
-            parser.print_help()
+        parser.print_help()
 
 
 if __name__ == "__main__":

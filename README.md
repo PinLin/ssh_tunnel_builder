@@ -12,10 +12,24 @@
 建立 SSH Tunnel 服務：
 
 ```bash
-python3 tunnel.py make <tunnel_name> <ssh_args>
+python3 tunnel.py new <tunnel_name> <ssh_args>
 ```
 
 > 例如：
 > ```bash
-> python3 tunnel.py make mariadb remote_user@remote_host -R 3306:localhost:3306
+> python3 tunnel.py new mariadb remote_user@remote_host -R 3306:localhost:3306
 > ```
+
+列出既有的 SSH Tunnel 服務：
+
+```bash
+python3 tunnel.py ls
+```
+
+移除 SSH Tunnel 服務：
+
+```bash
+python3 tunnel.py rm <tunnel_name>
+```
+
+> 舊的指令名稱 `make`、`list`、`remove` 仍可使用。
